@@ -1,27 +1,14 @@
 from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .products import products
-from .models import Product
-from .serializer import ProductSerializer
-
-# Create your views here.
-
-
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        'api/products/',
-        'api/products/create/',
-        'api/products/upload/',
-        'api/products/<id>/reviews/',
-        'api/products/top/',
-        'api/products/<id>/',
-        'api/products/delete/<id>/',
-        'api/products/<update>/<id>/',
-    ]
-    return Response(routes)
+from base.products import products
+from base.models import Product
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.contrib.auth.hashers import make_password
+from base.serializer import ProductSerializer
+from rest_framework import status
 
 
 @api_view(['GET'])
