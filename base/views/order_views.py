@@ -12,6 +12,9 @@ from rest_framework import status
 from base.models import Product, Order, OrderItem, ShippingAddress
 from datetime import datetime
 
+from django.utils import timezone
+from pytz import timezone as tz
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -66,6 +69,17 @@ def addOrderItems(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def getMyOrders(request):
+    user = request.user
+
+    orders = user.order_set.all()
+    serializer = OrderSerializer(orders, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getOrderById(request, pk):
     user = request.user
     try:
@@ -84,10 +98,15 @@ def getOrderById(request, pk):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def updateOrderToPaid(request, pk):
-    order = Order.objects.get(_id=pk)
+    try:
+        order = Order.objects.get(_id=pk)
 
-    order.isPaid = True
-    order.paidAt = datetime.now()
-    order.save()
+        order.isPaid = True
+        # Set the paidAt field to the current time in Kenya's time zone (Africa/Nairobi)
+        kenya_time_zone = tz('Africa/Nairobi')
+        order.paidAt = timezone.now().astimezone(kenya_time_zone)
+        order.save()
 
-    return Response('Order was paid')
+        return Response('Order was paid')
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=404)
