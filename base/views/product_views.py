@@ -11,6 +11,23 @@ from base.serializer import ProductSerializer
 from rest_framework import status
 
 
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def createProduct(request):
+    user = request.user
+    product = Product.objects.create(
+        user=user,
+        name='Sample Name',
+        price=0,
+        brand='Sample Brand',
+        countInStock=0,
+        category='Sample Category',
+        description=''
+    )
+    serializer = ProductSerializer(product, many=False)
+    return Response(serializer.data)
+
+
 @api_view(['GET'])
 def getProducts(request):
     products = Product.objects.all()
