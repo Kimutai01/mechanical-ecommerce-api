@@ -120,3 +120,20 @@ def updateOrderToPaid(request, pk):
         return Response('Order was paid')
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=404)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def updateOrderToDelivered(request, pk):
+    try:
+        order = Order.objects.get(_id=pk)
+
+        order.isDelivered = True
+        # Set the deliveredAt field to the current time in Kenya's time zone (Africa/Nairobi)
+        kenya_time_zone = tz('Africa/Nairobi')
+        order.deliveredAt = timezone.now().astimezone(kenya_time_zone)
+        order.save()
+
+        return Response('Order was delivered')
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=404)
