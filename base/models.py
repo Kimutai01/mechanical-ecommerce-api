@@ -92,3 +92,14 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return str(self.address)
+    
+class PaymentResponse(models.Model):
+    Message = models.CharField(max_length=200, null=True, blank=True)
+    Success = models.BooleanField(default=False)
+    Status = models.IntegerField(null=True, blank=True, default=0)
+    Amount = models.DecimalField(
+        max_digits=7, decimal_places=2, null=True, blank=True)
+    transaction_code = models.CharField(max_length=200, null=True, blank=True)
+    transaction_reference = models.CharField(max_length=200, null=True, blank=True)
+    order_number = models.CharField(max_length=200, null=True, blank=True)
+    _id = models.AutoField(primary_key=True, editable=False)

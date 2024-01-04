@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Product, Review, Order, OrderItem, ShippingAddress
+from .models import Product, Review, Order, OrderItem, ShippingAddress, PaymentResponse
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -83,3 +83,23 @@ class OrderSerializer(serializers.ModelSerializer):
         user = obj.user
         serializer = UserSerializer(user, many=False)
         return serializer.data
+
+
+class PaymentResponseSerializer(serializers.ModelSerializer):
+
+    Message = serializers.CharField(
+        max_length=200, allow_blank=True, required=False)
+    Success = serializers.BooleanField(default=False, required=False)
+    Status = serializers.IntegerField(default=0, required=False)
+    Amount = serializers.DecimalField(
+        max_digits=7, decimal_places=2, required=False)
+    transaction_code = serializers.CharField(
+        max_length=200, allow_blank=True, required=False)
+    transaction_reference = serializers.CharField(
+        max_length=200, allow_blank=True, required=False)
+    order_number = serializers.CharField(
+        max_length=200, allow_blank=True, required=False)
+
+    class Meta:
+        model = PaymentResponse
+        fields = '__all__'

@@ -1,8 +1,23 @@
-version: "3.9"
-# django app
+version: "3"
 services:
-  django:
-    image: django:latest
-    build: .
+  mechanic:
+    build:
+      context: .
     ports:
-      - "8000:8000"
+      - "8002:8002"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    restart: always
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    restart: always
